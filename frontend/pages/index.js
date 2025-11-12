@@ -497,7 +497,7 @@ export default function Home() {
                 <span className="text-xl font-semibold">Polygon</span>
               </div>
               <div className="h-8">
-                <span className="text-xl font-semibold">MetaMask</span>
+                <span className="text-xl font-semibold">Eternl Wallet</span>
               </div>
               <div className="h-8">
                 <span className="text-xl font-semibold">shadcn/ui</span>

@@ -5,7 +5,6 @@ import Navbar from '@/components/layout/Navbar';
 import Head from 'next/head';
 import axios from 'axios';
 import TokenEnabledPredictionCard from '@/components/ui/TokenEnabledPredictionCard';
-import FetchAIEnhancedPredictionCard from '@/components/ui/FetchAIEnhancedPredictionCard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
@@ -615,7 +614,7 @@ useEffect(() => {
                 {filteredPredictions
                   .filter(pred => activeFilter === "All" || pred.category === activeFilter)
                   .map(prediction => (
-                    <FetchAIEnhancedPredictionCard 
+                    <TokenEnabledPredictionCard 
                       key={prediction.id} 
                       prediction={prediction} 
                       userTokens={userTokens}

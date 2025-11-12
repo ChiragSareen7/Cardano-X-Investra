@@ -100,10 +100,6 @@ const Navbar = () => {
             Dashboard
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-600 group-hover:w-full transition-all duration-300"></span>
           </Link>
-          <Link href="/fetchai-demo" className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium relative group">
-            Fetch.ai Demo
-            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-600 group-hover:w-full transition-all duration-300"></span>
-          </Link>
         </>
       );
     }
@@ -168,12 +164,6 @@ const Navbar = () => {
             className="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 font-medium px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             Dashboard
-          </Link>
-          <Link 
-            href="/fetchai-demo" 
-            className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          >
-            Fetch.ai Demo
           </Link>
         </>
       );

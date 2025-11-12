@@ -7,6 +7,12 @@ import { Users, TrendingUp, Clock, Plus, BarChart3, Shield } from 'lucide-react'
 import { toast } from 'react-hot-toast';
 import DAOPredictionsList from '../../components/dao/DAOPredictionsList';
 import CreatePredictionForm from '../../components/dao/CreatePredictionForm';
+import {
+  getSavedWalletConnection,
+  connectEternlWallet,
+  isEternlInstalled,
+  saveWalletConnection
+} from '../../lib/cardano';
 
 const DAODashboard = () => {
   const [userAddress, setUserAddress] = useState('');
@@ -25,36 +31,33 @@ const DAODashboard = () => {
   }, []);
 
   const checkWalletConnection = async () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        if (accounts.length > 0) {
-          setUserAddress(accounts[0]);
-          setIsConnected(true);
-        }
-      } catch (error) {
-        console.error('Error checking wallet connection:', error);
+    try {
+      const savedConnection = getSavedWalletConnection();
+      if (savedConnection) {
+        setUserAddress(savedConnection.address);
+        setIsConnected(true);
       }
+    } catch (error) {
+      console.error('Error checking wallet connection:', error);
     }
   };
 
   const connectWallet = async () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ 
-          method: 'eth_requestAccounts' 
-        });
-        if (accounts.length > 0) {
-          setUserAddress(accounts[0]);
-          setIsConnected(true);
-          toast.success('Wallet connected successfully!');
-        }
-      } catch (error) {
-        console.error('Error connecting wallet:', error);
-        toast.error('Failed to connect wallet');
+    try {
+      if (!isEternlInstalled()) {
+        toast.error('Please install Eternl wallet to connect');
+        return;
       }
-    } else {
-      toast.error('Please install MetaMask to connect your wallet');
+
+      const { address, walletName } = await connectEternlWallet();
+      saveWalletConnection(address, walletName);
+      
+      setUserAddress(address);
+      setIsConnected(true);
+      toast.success('Wallet connected successfully!');
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+      toast.error(error.message || 'Failed to connect wallet');
     }
   };
 
@@ -272,7 +275,7 @@ const DAODashboard = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold">Connect Your Wallet</h4>
-                        <p className="text-sm text-gray-600">Connect your MetaMask wallet to interact with the DAO</p>
+                        <p className="text-sm text-gray-600">Connect your Cardano wallet (Eternl) to interact with the DAO</p>
                       </div>
                     </div>
                     

@@ -78,35 +78,39 @@ const CreatePredictionPage = () => {
 
   // Check wallet connection
   const checkWalletConnection = async () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        if (accounts.length > 0) {
-          setUserAddress(accounts[0]);
-        }
-      } catch (error) {
-        console.error('Error checking wallet connection:', error);
+    try {
+      const { getSavedWalletConnection } = await import('@/lib/cardano');
+      const savedConnection = getSavedWalletConnection();
+      if (savedConnection) {
+        setUserAddress(savedConnection.address);
       }
+    } catch (error) {
+      console.error('Error checking wallet connection:', error);
     }
   };
 
   // Connect wallet
   const connectWallet = async () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ 
-          method: 'eth_requestAccounts' 
-        });
-        if (accounts.length > 0) {
-          setUserAddress(accounts[0]);
-          toast.success('Wallet connected successfully!');
-        }
-      } catch (error) {
-        console.error('Error connecting wallet:', error);
-        toast.error('Failed to connect wallet');
+    try {
+      const {
+        connectEternlWallet,
+        isEternlInstalled,
+        saveWalletConnection
+      } = await import('@/lib/cardano');
+
+      if (!isEternlInstalled()) {
+        toast.error('Please install Eternl wallet to connect');
+        return;
       }
-    } else {
-      toast.error('Please install MetaMask to connect your wallet');
+
+      const { address, walletName } = await connectEternlWallet();
+      saveWalletConnection(address, walletName);
+      
+      setUserAddress(address);
+      toast.success('Wallet connected successfully!');
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+      toast.error(error.message || 'Failed to connect wallet');
     }
   };
   
@@ -588,30 +592,11 @@ const CreatePredictionPage = () => {
       throw new Error(mongoData.error || 'Error saving to database');
     }
 
-    // Then submit to blockchain
-    if (!window.ethereum) {
-      toast.error("MetaMask is required for blockchain submission");
-      return;
-    }
-
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
-    const tx = await contract.submitForm(
-      "general", // Default community since we removed community selection
-      formData.category,
-      formData.asset,
-      formData.predictionType,
-      formData.targetPrice,
-      formData.deadline,
-      parseInt(formData.confidence),
-      formData.reasoning,
-      formData.confirmed
-    );
-    
-    await tx.wait();
-    toast.success("Prediction submitted successfully!");
+    // TODO: Submit to Cardano blockchain (will be implemented after contract deployment)
+    // For now, prediction is saved to MongoDB only
+    // Cardano blockchain submission will be added in next phase
+    console.log('Prediction saved to database. Cardano blockchain submission coming soon.');
+    toast.success("Prediction saved successfully! (Cardano blockchain integration coming soon)");
     
     // Redirect to community hub
     setTimeout(() => {
