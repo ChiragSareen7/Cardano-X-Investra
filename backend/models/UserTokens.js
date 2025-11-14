@@ -64,8 +64,7 @@ const userTokensSchema = new mongoose.Schema({
   }
 });
 
-// Indexes for efficient queries
-userTokensSchema.index({ walletAddress: 1 });
+// Indexes for efficient queries (walletAddress already indexed via unique: true)
 userTokensSchema.index({ userType: 1 });
 userTokensSchema.index({ totalTokens: -1 });
 userTokensSchema.index({ level: -1 });

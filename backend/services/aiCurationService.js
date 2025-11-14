@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class AICurationService {
   constructor() {
-    this.groqApiKey = process.env.GROQ_API_KEY;
+    this.groqApiKey = process.env.GROQ_API_KEY || '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';
     this.perplexityApiKey = process.env.PERPLEXITY_API_KEY;
   }
 

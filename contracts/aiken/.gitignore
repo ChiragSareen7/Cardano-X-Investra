@@ -1,0 +1,19 @@
+# Aiken build artifacts
+build/
+*.plutus
+*.json
+
+# Aiken cache
+.aiken/
+
+# Cardano CLI files
+*.signed
+*.unsigned
+*.addr
+*.skey
+*.vkey
+
+# Environment files
+.env
+*.env.local
+

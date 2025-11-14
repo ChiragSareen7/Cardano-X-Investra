@@ -8,10 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from '../ui/badge';
 import { Plus, Clock, AlertCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { ethers } from 'ethers';
-import { predictionDAOAbi } from '../../contract/daoAbi';
-import { DAO_CONTRACT_CONFIG } from '../../contract/daoContractAddress';
-
 const CreatePredictionForm = ({ userAddress, onPredictionCreated }) => {
   const [formData, setFormData] = useState({
     title: '',

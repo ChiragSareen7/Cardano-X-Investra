@@ -75,11 +75,14 @@ const daopredictionSchema = new mongoose.Schema({
   contractPredictionId: {
     type: String,
     default: null
+  },
+  cardanoDebug: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
   }
 });
 
-// Index for efficient queries
-daopredictionSchema.index({ id: 1 });
+// Index for efficient queries (id already indexed via unique: true)
 daopredictionSchema.index({ isActive: 1, endTime: 1 });
 daopredictionSchema.index({ isApproved: 1 });
 daopredictionSchema.index({ creator: 1 });

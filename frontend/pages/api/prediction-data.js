@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5004';
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5008';
       
       // Forward the request to the backend
       const response = await fetch(`${backendUrl}/api/predictions`, {
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'GET') {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5004';
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5008';
       
       // Forward the request to the backend
       const response = await fetch(`${backendUrl}/api/predictions?${new URLSearchParams(req.query)}`, {

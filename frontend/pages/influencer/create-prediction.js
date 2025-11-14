@@ -5,9 +5,6 @@ import { toast, Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 
-import { ethers } from "ethers";
-import { contractABI } from "../../contract/abi";
-import { contractAddress } from "../../contract/contractAddress";
 import Navbar from '@/components/layout/Navbar';
 import { 
   Card, 
@@ -292,14 +289,8 @@ const CreatePredictionPage = () => {
       const totalScore = getTotalValidationScore();
       setValidationPercentage(totalScore);
       
-      // Check if validation passes threshold (40%)
-      if (!validationMeetsThreshold()) {
-        setValidationError("Prediction not strong enough. Please add more relevant reasoning or credible documents. Validation requires a score of at least 40%.");
-        toast.error("Please strengthen your reasoning or add more credible sources. Validation requires a score of at least 40%.");
-      } else {
-        // If validation passes, allow moving to the preview tab
-        toast.success("Validation successful! You can now proceed to preview.");
-      }
+      // Always allow validation to pass - no percentage threshold blocking
+      toast.success("Validation complete! You can now proceed to preview.");
       
     } catch (error) {
       console.error('Error validating prediction:', error);
@@ -370,11 +361,9 @@ const CreatePredictionPage = () => {
       if (!validateSetupFields()) return;
     }
     
+    // No threshold blocking - allow navigation
     if (activeTab === 'reasoning' && (nextTab === 'preview' || nextTab === 'submit')) {
-      if (!validationMeetsThreshold()) {
-        toast.error("Please strengthen your reasoning or add more credible sources. Validation requires a score of at least 40%.");
-        return;
-      }
+      // Validation is optional - allow proceeding
     }
     
     setActiveTab(nextTab);
@@ -388,10 +377,7 @@ const CreatePredictionPage = () => {
       return;
     }
 
-    if (!validationMeetsThreshold()) {
-      toast.error("Your prediction must pass validation before submission");
-      return;
-    }
+    // No validation threshold blocking - allow submission
 
     try {
       // Submit to DAO for voting (all predictions go through DAO now)
@@ -406,8 +392,6 @@ const CreatePredictionPage = () => {
 
   const submitToDAO = async () => {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5004';
-      
       // Create prediction title and description
       const predictionTitle = `${formData.asset} ${formData.predictionType === 'priceTarget' ? 'will reach ' + formData.targetPrice : 
                             formData.predictionType === 'percentage' ? 'will change by ' + formData.targetPrice : 
@@ -445,8 +429,8 @@ const CreatePredictionPage = () => {
         }
       };
 
-      // Submit to DAO backend
-      const response = await fetch(`${backendUrl}/api/dao/predictions/create`, {
+      // Submit to DAO backend via Next.js API route
+      const response = await fetch('/api/dao/predictions/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -464,7 +448,9 @@ const CreatePredictionPage = () => {
       const result = await response.json();
       
       if (!response.ok) {
-        throw new Error(result.message || 'Failed to submit to DAO');
+        const errorMsg = result.message || 'Failed to submit to DAO';
+        const hint = result.hint ? `\n\n${result.hint}` : '';
+        throw new Error(`${errorMsg}${hint}`);
       }
 
       toast.success("Prediction submitted to DAO for community voting!");
@@ -731,12 +717,10 @@ const CreatePredictionPage = () => {
     return Math.round(reasoningScore + documentsScore);
   };
   
-  // Check if the validation meets the threshold
+  // Check if the validation meets the threshold - always return true (no blocking)
   const validationMeetsThreshold = () => {
-    const totalScore = getTotalValidationScore();
-    
-    // For demo purposes, just check if total score meets threshold
-    return totalScore >= 40;
+    // No percentage threshold - always allow validation
+    return true;
   };   // Animation variants
    const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -1276,17 +1260,15 @@ const CreatePredictionPage = () => {
                           </Button>
                           
                           <div className="flex gap-3">
-                            {validationPercentage > 0 && !validationError && (
-                              <Button 
-                                type="button" 
-                                onClick={() => handleTabChange('preview')}
-                                className="bg-green-600 hover:bg-green-500 text-white font-bold"
-                              >
-                                <span className="flex items-center">
-                                  <CheckCircle size={18} className="mr-2" /> Continue to Preview
-                                </span>
-                              </Button>
-                            )}
+                            <Button 
+                              type="button" 
+                              onClick={() => handleTabChange('preview')}
+                              className="bg-green-600 hover:bg-green-500 text-white font-bold"
+                            >
+                              <span className="flex items-center">
+                                <CheckCircle size={18} className="mr-2" /> Continue to Preview
+                              </span>
+                            </Button>
                             
                             <Button 
                               type="button" 
@@ -1388,19 +1370,19 @@ const CreatePredictionPage = () => {
                         {validationError && (
                           <Alert className={`border-red-500/20 ${theme === 'dark' ? 'bg-red-500/10' : 'bg-red-50'} ${theme === 'dark' ? 'border-red-500/20' : 'border-red-200'} mb-4`}>
                             <AlertCircle className={`h-4 w-4 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
-                            <AlertTitle className={`${theme === 'dark' ? 'text-red-400' : 'text-red-700'}`}>Validation Failed</AlertTitle>
+                            <AlertTitle className={`${theme === 'dark' ? 'text-red-400' : 'text-red-700'}`}>Validation Error</AlertTitle>
                             <AlertDescription className={`${theme === 'dark' ? 'text-red-200' : 'text-red-600'}`}>
                               {validationError}
                             </AlertDescription>
                           </Alert>
                         )}
                         
-                        {validationPercentage > 0 && !validationError && (
-                          <Alert className={`border-green-500/20 ${theme === 'dark' ? 'bg-green-500/10' : 'bg-green-50'} ${theme === 'dark' ? 'border-green-500/20' : 'border-green-200'} mb-4`}>
-                            <CheckCircle className={`h-4 w-4 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
-                            <AlertTitle className={`${theme === 'dark' ? 'text-green-400' : 'text-green-700'}`}>Validation Score: {validationPercentage}%</AlertTitle>
-                            <AlertDescription className={`${theme === 'dark' ? 'text-green-200' : 'text-green-600'}`}>
-                              Your prediction is well-supported and ready for review.
+                        {validationPercentage > 0 && (
+                          <Alert className={`border-blue-500/20 ${theme === 'dark' ? 'bg-blue-500/10' : 'bg-blue-50'} ${theme === 'dark' ? 'border-blue-500/20' : 'border-blue-200'} mb-4`}>
+                            <CheckCircle className={`h-4 w-4 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
+                            <AlertTitle className={`${theme === 'dark' ? 'text-blue-400' : 'text-blue-700'}`}>Validation Score: {validationPercentage}%</AlertTitle>
+                            <AlertDescription className={`${theme === 'dark' ? 'text-blue-200' : 'text-blue-600'}`}>
+                              Your prediction has been analyzed. You can proceed to submit.
                             </AlertDescription>
                           </Alert>
                         )}

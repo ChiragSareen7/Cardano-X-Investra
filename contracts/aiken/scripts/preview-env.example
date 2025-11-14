@@ -1,0 +1,15 @@
+# Preview Testnet environment variables for Inverstra Aiken contracts
+# Copy this file to `.env.preview` and update the paths/keys as needed.
+
+CARDANO_NETWORK=preview
+CARDANO_NETWORK_MAGIC=2
+
+# Optional: Ogmios/Websocket endpoints for tooling
+CARDANO_OGMIOS_URL=https://ogmios.preview.world.dev.cardano.org
+CARDANO_SUBMIT_API_URL=https://submit-api.preview.world.dev.cardano.org
+
+# Paths to keys generated via `cardano-cli`
+CARDANO_PAYMENT_SKEY=~/.cardano/preview/payment.skey
+CARDANO_PAYMENT_VKEY=~/.cardano/preview/payment.vkey
+CARDANO_STAKE_SKEY=~/.cardano/preview/stake.skey
+CARDANO_STAKE_VKEY=~/.cardano/preview/stake.vkey

@@ -73,8 +73,7 @@ const influencerProfileSchema = new mongoose.Schema({
   }
 });
 
-// Index for efficient queries
-influencerProfileSchema.index({ walletAddress: 1 });
+// Index for efficient queries (walletAddress already indexed via unique: true)
 influencerProfileSchema.index({ verificationStatus: 1 });
 influencerProfileSchema.index({ reputation: -1 });
 

@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY || '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'}`,
           'Content-Type': 'application/json'
         }
       }

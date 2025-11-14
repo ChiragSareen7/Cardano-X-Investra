@@ -5,6 +5,89 @@
 
 import { Address } from 'lucid-cardano';
 
+const SESSION_ADDRESSES_KEY = 'cardanoSessionAddresses';
+
+const persistSessionAddresses = ({ walletName, addresses, rawHexAddresses }) => {
+  if (typeof sessionStorage === 'undefined') return;
+
+  sessionStorage.setItem(
+    SESSION_ADDRESSES_KEY,
+    JSON.stringify({
+      walletName,
+      addresses,
+      rawHexAddresses,
+      updatedAt: Date.now()
+    })
+  );
+};
+
+const clearSessionAddresses = () => {
+  if (typeof sessionStorage === 'undefined') return;
+  sessionStorage.removeItem(SESSION_ADDRESSES_KEY);
+};
+
+export const getSessionAddresses = () => {
+  if (typeof sessionStorage === 'undefined') return null;
+  const raw = sessionStorage.getItem(SESSION_ADDRESSES_KEY);
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    console.warn('Failed to parse session addresses cache', error);
+    return null;
+  }
+};
+
+export const subscribeToWalletEvents = async (walletProvider = 'eternl', { onAccountChange, onNetworkChange } = {}) => {
+  if (typeof window === 'undefined') return () => {};
+  const provider = window.cardano?.[walletProvider];
+
+  if (!provider) return () => {};
+
+  let unsubscribeFns = [];
+
+  try {
+    const api = await provider.enable();
+    const experimental = api?.experimental;
+
+    if (experimental?.on) {
+      if (onAccountChange) {
+        const accountUnsub = experimental.on('accountChange', onAccountChange);
+        unsubscribeFns.push(accountUnsub);
+      }
+      if (onNetworkChange) {
+        const networkUnsub = experimental.on('networkChange', onNetworkChange);
+        unsubscribeFns.push(networkUnsub);
+      }
+    } else if (provider.on) {
+      if (onAccountChange) {
+        provider.on('accountChange', onAccountChange);
+        unsubscribeFns.push(() => provider.removeListener?.('accountChange', onAccountChange));
+      }
+      if (onNetworkChange) {
+        provider.on('networkChange', onNetworkChange);
+        unsubscribeFns.push(() => provider.removeListener?.('networkChange', onNetworkChange));
+      }
+    } else {
+      console.info(`[Cardano] Wallet ${walletProvider} does not expose event subscriptions; falling back to polling.`);
+    }
+  } catch (error) {
+    console.warn('Failed to subscribe to wallet events', error);
+  }
+
+  return () => {
+    unsubscribeFns.forEach((fn) => {
+      try {
+        fn && fn();
+      } catch (error) {
+        console.warn('Failed to unsubscribe wallet event', error);
+      }
+    });
+    unsubscribeFns = [];
+  };
+};
+
 /**
  * Check if Eternl wallet is installed
  * @returns {boolean}
@@ -63,9 +146,16 @@ export const connectEternlWallet = async () => {
 
     const primaryAddress = bech32Addresses[0];
 
+    persistSessionAddresses({
+      walletName: 'eternl',
+      addresses: bech32Addresses,
+      rawHexAddresses
+    });
+
     return {
       address: primaryAddress,
       wallet,
+      walletName: 'eternl',
       addresses: bech32Addresses,
       rawAddresses: rawHexAddresses
     };
@@ -118,6 +208,12 @@ export const connectCardanoWallet = async (preferredWallet = 'eternl') => {
     } = await fetchWalletAddresses(wallet);
 
     const primaryAddress = bech32Addresses[0];
+
+    persistSessionAddresses({
+      walletName,
+      addresses: bech32Addresses,
+      rawHexAddresses
+    });
 
     return {
       address: primaryAddress,
@@ -175,6 +271,7 @@ export const disconnectWallet = () => {
   localStorage.removeItem('connectedWalletAddress');
   localStorage.removeItem('connectedWalletName');
   localStorage.removeItem('cardanoWallet');
+  clearSessionAddresses();
 };
 
 /**

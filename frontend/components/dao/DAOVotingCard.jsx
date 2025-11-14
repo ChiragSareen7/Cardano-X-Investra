@@ -5,10 +5,6 @@ import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { CheckCircle, XCircle, Clock, Users, TrendingUp } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { ethers } from 'ethers';
-import { predictionDAOAbi } from '../../contract/daoAbi';
-import { DAO_CONTRACT_CONFIG } from '../../contract/daoContractAddress';
-
 const DAOVotingCard = ({ prediction, userAddress, onVoteSuccess }) => {
   const [hasVoted, setHasVoted] = useState(false);
   const [votingStats, setVotingStats] = useState(null);

@@ -69,10 +69,9 @@ const tokenTransactionSchema = new mongoose.Schema({
   }
 });
 
-// Indexes for efficient queries
+// Indexes for efficient queries (transactionId already indexed via unique: true)
 tokenTransactionSchema.index({ walletAddress: 1, createdAt: -1 });
 tokenTransactionSchema.index({ transactionType: 1 });
 tokenTransactionSchema.index({ createdAt: -1 });
-tokenTransactionSchema.index({ transactionId: 1 });
 
 module.exports = mongoose.model('TokenTransaction', tokenTransactionSchema);

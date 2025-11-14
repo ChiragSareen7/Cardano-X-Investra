@@ -1,0 +1,20 @@
+[package]
+name = "inverstra/prediction_dao"
+version = "0.1.0"
+description = "Prediction DAO smart contract for Cardano"
+authors = ["Inverstra Team"]
+license = "MIT"
+
+[compiler]
+target = "plutus:v3"
+
+[dependencies]
+
+[test]
+network = "preview"
+
+[scripts]
+test = "aiken check"
+build = "aiken build"
+docs = "aiken docs"
+
