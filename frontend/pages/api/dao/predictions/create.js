@@ -7,9 +7,9 @@ export default async function handler(req, res) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5008';
 
   try {
-    // Add timeout to fetch request
+    // Add timeout to fetch request (increased to 15 seconds to allow for MongoDB operations)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
     const response = await fetch(`${backendUrl}/api/dao/predictions/create`, {
       method: 'POST',

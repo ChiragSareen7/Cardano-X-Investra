@@ -1,5 +1,5 @@
 // /pages/api/validate-document.js
-import formidable from 'formidable';
+import { IncomingForm } from 'formidable';
 import fs from 'fs';
 import axios from 'axios';
 
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
   try {
     // Parse form with uploaded file
-    const form = new formidable.IncomingForm();
+    const form = new IncomingForm();
     form.keepExtensions = true;
 
     const [fields, files] = await new Promise((resolve, reject) => {

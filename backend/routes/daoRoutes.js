@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const DAOPrediction = require('../models/DAOPrediction');
 const InfluencerProfile = require('../models/InfluencerProfile');
 const PredictionData = require('../models/PredictionData');
@@ -58,8 +59,20 @@ const getPredictionCountFromDb = async () => {
 };
 
 const createPredictionInDb = async (predictionData) => {
-  const lastPrediction = await DAOPrediction.findOne().sort({ id: -1 });
-  const nextId = lastPrediction ? lastPrediction.id + 1 : 1;
+  // Check if MongoDB is connected
+  if (mongoose.connection.readyState !== 1) {
+    throw new Error('MongoDB is not connected. Please check your connection and IP whitelist.');
+  }
+
+  let nextId = 1;
+  try {
+    const lastPrediction = await DAOPrediction.findOne().sort({ id: -1 }).maxTimeMS(5000);
+    nextId = lastPrediction ? lastPrediction.id + 1 : 1;
+  } catch (error) {
+    console.error('Error finding last prediction, using timestamp-based ID:', error.message);
+    // Fallback: use timestamp-based ID if query fails
+    nextId = Math.floor(Date.now() / 1000) % 1000000; // Use timestamp modulo to keep it reasonable
+  }
 
   const prediction = new DAOPrediction({
     id: nextId,
@@ -192,6 +205,16 @@ router.post('/predictions/create', async (req, res) => {
         message: 'Missing required fields'
       });
     }
+
+    // Check MongoDB connection before proceeding
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection unavailable',
+        error: 'MongoDB is not connected. Please check your connection string and IP whitelist in MongoDB Atlas.',
+        hint: 'Add your current IP address to MongoDB Atlas IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/'
+      });
+    }
     
     const endTime = Math.floor(Date.now() / 1000) + (parseInt(votingPeriod) * 24 * 60 * 60);
     
@@ -203,19 +226,38 @@ router.post('/predictions/create', async (req, res) => {
       endTime
     };
     
-    const cardanoAttempt = await cardanoTransactionService.createPredictionTransaction({
-      walletAddress: creator,
-      datum: {
-        title,
-        description,
-        category,
-        votingPeriod: parseInt(votingPeriod, 10),
-        endTime
-      },
-      scriptRef: {
+    // Try Cardano transaction creation with timeout protection
+    let cardanoAttempt;
+    try {
+      cardanoAttempt = await Promise.race([
+        cardanoTransactionService.createPredictionTransaction({
+          walletAddress: creator,
+          datum: {
+            title,
+            description,
+            category,
+            votingPeriod: parseInt(votingPeriod, 10),
+            endTime
+          },
+          scriptRef: {
+            network: cardanoConfig.network
+          }
+        }),
+        new Promise((resolve) => setTimeout(() => resolve({
+          status: 'timeout',
+          message: 'Cardano service timeout - using MongoDB fallback',
+          network: cardanoConfig.network
+        }), 5000)) // 5 second timeout
+      ]);
+    } catch (error) {
+      console.error('Cardano transaction service error:', error);
+      cardanoAttempt = {
+        status: 'error',
+        message: 'Cardano service error - using MongoDB fallback',
+        error: error.message,
         network: cardanoConfig.network
-      }
-    });
+      };
+    }
 
     predictionData.cardanoDebug = cardanoAttempt;
     const prediction = await createPredictionInDb(predictionData);
