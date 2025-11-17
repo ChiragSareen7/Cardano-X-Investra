@@ -14,6 +14,7 @@ In the world of finance, there's a growing distrust in self-proclaimed “finflu
 - ✅ Ensuring **transparency, credibility, and decentralization** in financial forecasting.
 
 - **Live Demo:** [https://cardano-investra.vercel.app/](https://cardano-investra.vercel.app/)
+- **Demo video:** [https://drive.google.com/drive/folders/1-5TgAL2dlrIimq7x2GgR7spvk1NEuRVi]
 
 ## 🚀 **Technology Stack (Cardano-First)**
 
