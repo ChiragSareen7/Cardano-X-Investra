@@ -14,6 +14,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing reasoning parameter' });
     }
 
+    // Check if API key is configured
+    if (!process.env.GROQ_API_KEY) {
+      console.error('GROQ_API_KEY not configured');
+      return res.status(500).json({ 
+        error: 'AI validation service not configured',
+        message: 'GROQ_API_KEY environment variable is required'
+      });
+    }
+
     const response = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
       {
@@ -29,7 +38,7 @@ export default async function handler(req, res) {
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.GROQ_API_KEY || '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'}`,
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
           'Content-Type': 'application/json'
         }
       }

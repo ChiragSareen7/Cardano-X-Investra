@@ -2,8 +2,17 @@ const axios = require('axios');
 
 class AICurationService {
   constructor() {
-    this.groqApiKey = process.env.GROQ_API_KEY || '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';
+    // Require API keys from environment variables - no hardcoded fallbacks
+    this.groqApiKey = process.env.GROQ_API_KEY;
     this.perplexityApiKey = process.env.PERPLEXITY_API_KEY;
+    
+    // Warn if API keys are missing (but don't throw to allow graceful degradation)
+    if (!this.groqApiKey) {
+      console.warn('⚠️  GROQ_API_KEY not set - Groq AI features will be unavailable');
+    }
+    if (!this.perplexityApiKey) {
+      console.warn('⚠️  PERPLEXITY_API_KEY not set - Perplexity AI features will be unavailable');
+    }
   }
 
   // Generate comprehensive personalized insights using GROQ AI
@@ -31,6 +40,11 @@ class AICurationService {
 
   // Generate personalized learning paths
   async generateLearningPaths(userProfile) {
+    if (!this.groqApiKey) {
+      console.warn('GROQ_API_KEY not set, using fallback learning paths');
+      return this.getFallbackLearningPaths(userProfile);
+    }
+    
     try {
       const prompt = `Based on this user profile, create a personalized learning path:
       
@@ -81,6 +95,11 @@ class AICurationService {
 
   // Generate investment recommendations based on profile
   async generateInvestmentRecommendations(userProfile) {
+    if (!this.groqApiKey) {
+      console.warn('GROQ_API_KEY not set, using fallback investment recommendations');
+      return this.getFallbackInvestmentRecommendations(userProfile);
+    }
+    
     try {
       const prompt = `Based on this user profile, provide specific investment recommendations:
       
@@ -130,6 +149,11 @@ class AICurationService {
 
   // Get real-time market news using Perplexity API
   async getMarketNews(userProfile) {
+    if (!this.perplexityApiKey) {
+      console.warn('PERPLEXITY_API_KEY not set, using fallback news');
+      return this.getFallbackNews(userProfile);
+    }
+    
     try {
       const query = this.buildNewsQuery(userProfile);
       
@@ -159,6 +183,11 @@ class AICurationService {
 
   // Generate learning recommendations
   async generateLearningRecommendations(userProfile) {
+    if (!this.groqApiKey) {
+      console.warn('GROQ_API_KEY not set, using fallback learning recommendations');
+      return this.getFallbackLearningRecommendations(userProfile);
+    }
+    
     try {
       const prompt = `Based on this user profile, suggest 3-5 specific learning topics and resources:
       
@@ -202,6 +231,11 @@ class AICurationService {
 
   // Generate risk alerts based on user profile
   async generateRiskAlerts(userProfile) {
+    if (!this.groqApiKey) {
+      console.warn('GROQ_API_KEY not set, using fallback risk alerts');
+      return this.getFallbackRiskAlerts(userProfile);
+    }
+    
     try {
       const prompt = `Analyze potential risks for this investor profile and provide 2-3 specific risk alerts:
       
@@ -449,6 +483,11 @@ class AICurationService {
 
   // Summarize the prediction
   async summarizePrediction(predictionData) {
+    if (!this.groqApiKey) {
+      console.warn('GROQ_API_KEY not set, using fallback summary');
+      return `Summary: ${predictionData.title} - ${predictionData.description}`;
+    }
+    
     try {
       const prompt = `Analyze and summarize this investment prediction for a DAO community:
 
@@ -495,6 +534,11 @@ class AICurationService {
 
   // Get market context using Perplexity
   async getMarketContext(predictionData) {
+    if (!this.perplexityApiKey) {
+      console.warn('PERPLEXITY_API_KEY not set, using fallback market context');
+      return `Market context for ${predictionData.category} - Current trends and conditions relevant to this prediction.`;
+    }
+    
     try {
       const query = `Current market conditions and trends for ${predictionData.category} investments, recent news and analysis for ${predictionData.title}`;
       
@@ -524,6 +568,11 @@ class AICurationService {
 
   // Assess prediction credibility
   async assessPredictionCredibility(predictionData) {
+    if (!this.groqApiKey) {
+      console.warn('GROQ_API_KEY not set, using fallback credibility assessment');
+      return `Credibility assessment: Analysis of prediction feasibility and market alignment.`;
+    }
+    
     try {
       const prompt = `Assess the credibility and reliability of this investment prediction:
 
@@ -570,6 +619,11 @@ class AICurationService {
 
   // Get related news
   async getRelatedNews(predictionData) {
+    if (!this.perplexityApiKey) {
+      console.warn('PERPLEXITY_API_KEY not set, using fallback related news');
+      return `Related news: Recent developments in ${predictionData.category} market relevant to this prediction.`;
+    }
+    
     try {
       const query = `Latest news and developments related to ${predictionData.title} and ${predictionData.category} market`;
       

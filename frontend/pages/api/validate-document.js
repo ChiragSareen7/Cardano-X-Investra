@@ -44,6 +44,17 @@ export default async function handler(req, res) {
     // Extract prediction details from the form
     const predictionText = fields.predictionText || 'No prediction provided';
 
+    // Check if API key is configured
+    if (!process.env.PERPLEXITY_API_KEY) {
+      console.error('PERPLEXITY_API_KEY not configured');
+      return res.status(500).json({
+        trustLevel: "unverified",
+        score: 30,
+        summary: "Document validation service not configured. PERPLEXITY_API_KEY environment variable is required.",
+        error: true
+      });
+    }
+
     // Send the file content to Perplexity API for validation
     const response = await axios.post(
       'https://api.perplexity.ai/chat/completions',

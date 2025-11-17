@@ -22,11 +22,11 @@ module.exports = {
   networkMagic: Number(process.env.CARDANO_NETWORK_MAGIC || selectedNetwork.magic),
   blockfrost: {
     url: selectedNetwork.blockfrostUrl,
-    projectId:
-      process.env.CARDANO_BLOCKFROST_PROJECT_ID ||
-      'previewOFxkJcUid7EIM1jY7RdoBnFssQcZyrqL'
+    // Require Blockfrost project ID from environment - no hardcoded fallback
+    projectId: process.env.CARDANO_BLOCKFROST_PROJECT_ID
   },
   ogmiosUrl: process.env.CARDANO_OGMIOS_URL || 'https://ogmios.preview.world.dev.cardano.org',
   logLevel: process.env.CARDANO_LOG_LEVEL || 'info'
 };
+
 

@@ -47,9 +47,6 @@ export default function Home() {
     <div className="absolute top-1/2 left-1/2 w-96 h-96 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-pink-500 blur-3xl transform -translate-x-1/2 -translate-y-1/2"></div>
   </div>
   <div className="relative z-10 w-full max-w-4xl mx-auto text-center">
-    <span className="inline-block mb-6 px-4 py-1 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white text-xs font-semibold shadow-md">
-      🚀 Built for HackIndia 2025
-    </span>
     <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight text-slate-900 dark:text-white">
       Invest smarter with <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">AI-verified tips</span> & trusted communities
     </h1>

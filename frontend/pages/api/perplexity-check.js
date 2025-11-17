@@ -13,6 +13,17 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing query parameter' });
     }
 
+    // Check if API key is configured
+    if (!process.env.PERPLEXITY_API_KEY) {
+      console.error('PERPLEXITY_API_KEY not configured');
+      return res.status(500).json({
+        error: 'AI validation service not configured',
+        message: 'PERPLEXITY_API_KEY environment variable is required',
+        summary: 'Service unavailable - API key not configured',
+        confidenceLevel: 'moderately supported'
+      });
+    }
+
     console.log("Sending request to Perplexity with query:", query);
 
     // Using the correct model for the basic tier Perplexity API

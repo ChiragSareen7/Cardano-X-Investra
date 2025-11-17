@@ -9,12 +9,43 @@ connectDB();
 
 const app = express();
 
+// Configure CORS with environment variable support
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  process.env.FRONTEND_URL,
+  // Support Vercel preview deployments (wildcard)
+  ...(process.env.FRONTEND_URL ? [`https://*.vercel.app`] : []),
+  // Legacy support for hardcoded URLs
+  'https://hack-india25-maverick1.vercel.app'
+].filter(Boolean); // Remove undefined values
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000', 
-    'http://localhost:3001',
-    'https://hack-india25-maverick1.vercel.app'
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in allowed list
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed.includes('*')) {
+        // Support wildcard matching for Vercel preview deployments
+        const pattern = allowed.replace('*.', '');
+        return origin.includes(pattern);
+      }
+      return allowed === origin;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      // In development, log the blocked origin for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`⚠️  CORS blocked origin: ${origin}`);
+        console.log(`💡 Allowed origins: ${allowedOrigins.join(', ')}`);
+      }
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
