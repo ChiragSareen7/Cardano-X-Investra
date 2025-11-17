@@ -15,25 +15,32 @@ In the world of finance, there's a growing distrust in self-proclaimed “finflu
 
 - **Live Demo:** [https://hack-india25-maverick1.vercel.app/](https://hack-india25-maverick1.vercel.app/)
 
-## 🚀 **Technology Stack**
+## 🚀 **Technology Stack (Cardano-First)**
 
-- **Frontend:** Next.js, React, Tailwind CSS, Shadcn UI
-- **Backend:** Node.js, Express.js, RESTful APIs
-- **Database:** MongoDB Atlas (document storage, user profiles)
-- **Web3:** Ethereum, MetaMask, Ethers.js v6, Solidity (Smart Contracts)
-- **Authentication:** Wallet-based auth (MetaMask integration)
-- **Verification:** Web scraping system for market data verification and source credibility
+- **Frontend:** Next.js, React, Tailwind CSS, Shadcn UI, Framer Motion  
+- **Wallet & Cardano:**  
+  - Cardano CIP-30 wallets (Eternl)  
+  - `lucid-cardano` for wallet connection & transaction building  
+  - Custom Cardano helper layer in `frontend/lib/cardano.js`  
+- **Backend:** Node.js, Express.js, RESTful APIs  
+- **Database:** MongoDB Atlas (user profiles, predictions, tokens) — used as an off-chain mirror and fallback, **Cardano is the source of truth for governance & accountability**  
+- **Web3 (Current Implementation):**  
+  - Target chain: **Cardano**  
+  - Wallet auth & addresses via Cardano wallets (Eternl-first)  
+  - On-chain governance model based on the `PredictionDAO` contract logic (Solidity prototype in `contracts/PredictionDAO.sol`, being ported to Plutus as per `CARDANO-MIGRATION-PLAN.md`)  
+- **Authentication:** Non-custodial, wallet-based auth (Cardano wallets – primarily Eternl)  
+- **Verification:** Web scraping + AI curation layer for market data, news, and source credibility
 
 ## 🔄 **User Flows & Experience**
 
 ### **Complete User Journey**
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   User Visits   │───▶│  MetaMask       │───▶│  Role Selection │───▶│  Profile Setup  │
-│   Website       │    │  Connection     │    │  (Learner/      │    │  (Investment    │
-│                 │    │                 │    │   Expert/       │    │   Preferences)  │
-│                 │    │                 │    │   Verifier)     │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
+┌─────────────────┐    ┌────────────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   User Visits   │───▶│  Connect Cardano       │───▶│  Role Selection │───▶│  Profile Setup  │
+│   Website       │    │  Wallet (Eternl)       │    │  (Learner/      │    │  (Investment    │
+│                 │    │                        │    │   Expert/       │    │   Preferences)  │
+│                 │    │  (Wallet = Login)      │    │   Verifier)     │    │                 │
+└─────────────────┘    └────────────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ### **Expert Flow**
@@ -122,21 +129,21 @@ This token-based economy ensures:
 
 ## 🧪 **Features Completed for HackIndia**
 
-- ✅ **Wallet Integration:** MetaMask connection with account persistence
+- ✅ **Wallet Integration:** Cardano wallet connection (Eternl-first, CIP‑30) with address persistence
 - ✅ **Multi-Role System:** Distinct flows for experts, learners, and DAO members
 - ✅ **Dynamic Dashboard:** Personalized prediction feed with modern UI
 - ✅ **Verification System:** Web scraping verification for data accuracy
 - ✅ **DAO Governance:** Community voting mechanism with supermajority requirements
 - ✅ **Token Economy:** Fully implemented token distribution and spending system
-- ✅ **Smart Contracts:** PredictionDAO.sol with voting and governance functions
-- ✅ **MongoDB Integration:** Complete user profile and prediction storage
+- ✅ **Smart Contracts (Design):** `PredictionDAO` governance logic (current Solidity prototype, being migrated to Cardano/Plutus for production)
+- ✅ **MongoDB Integration:** Complete user profile, prediction & token storage as an off‑chain mirror / fallback
 
 ## 🛠️ **Project Setup Instructions**
 
 ### Frontend Setup
 ```bash
-git clone https://github.com/your-username/inverstra.git
-cd inverstra/frontend
+git clone https://github.com/ChiragSareen7/Cardano-X-Investra.git
+cd Cardano-X-Investra/frontend
 npm install
 npm run dev
 ```
@@ -148,18 +155,16 @@ npm install
 npm run dev
 ```
 
-### Blockchain Setup
-```bash
-cd ../contracts
-npm install
-npx hardhat compile
-npx hardhat node  # Local blockchain
-npx hardhat run scripts/deploy.js --network localhost
-```
-
 **Requirements:**
 - Node.js v16+
-- MetaMask browser extension
+- Cardano wallet browser extension (recommended: **Eternl**, also supports Nami/Flint)
+
+> 🔁 **Note on Blockchain Layer:**  
+> The repository still contains the original Ethereum/Hardhat prototype (`contracts/` directory) as a reference for the DAO logic.  
+> The **target production deployment is on Cardano**, with Cardano-specific migration, architecture and Plutus plans documented in:  
+> - `CARDANO-MIGRATION-PLAN.md`  
+> - `CARDANO-MIGRATION-SUMMARY.md`  
+> - `TECHNOLOGY-FLOW-DIAGRAM.md`
 
 ## 🌐 **Impact & Vision**
 
