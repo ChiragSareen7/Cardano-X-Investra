@@ -13,7 +13,7 @@ In the world of finance, there's a growing distrust in self-proclaimed “finflu
 - ✅ Using **AI** to explain and validate reasoning behind investment ideas.
 - ✅ Ensuring **transparency, credibility, and decentralization** in financial forecasting.
 
-- **Live Demo:** [https://hack-india25-maverick1.vercel.app/](https://hack-india25-maverick1.vercel.app/)
+- **Live Demo:** [https://cardano-investra.vercel.app/](https://cardano-investra.vercel.app/)
 
 ## 🚀 **Technology Stack (Cardano-First)**
 
