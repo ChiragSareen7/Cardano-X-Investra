@@ -29,7 +29,7 @@ In the world of finance, there's a growing distrust in self-proclaimed “finflu
   - Target chain: **Cardano**  
   - Wallet auth & addresses via Cardano wallets (Eternl-first)  
   - On-chain governance model based on the `PredictionDAO` contract logic (Solidity prototype in `contracts/PredictionDAO.sol`, being ported to Plutus as per `CARDANO-MIGRATION-PLAN.md`)  
-- **Authentication:** Non-custodial, wallet-based auth (Cardano wallets – primarily Eternl)  
+- **Authentication:** Non-custodial, wallet-based auth (Cardano wallet – Eternl)  
 - **Verification:** Web scraping + AI curation layer for market data, news, and source credibility
 
 ## 🔄 **User Flows & Experience**
@@ -158,13 +158,11 @@ npm run dev
 
 **Requirements:**
 - Node.js v16+
-- Cardano wallet browser extension (recommended: **Eternl**, also supports Nami/Flint)
+- Cardano wallet browser extension (recommended: **Eternl**)
 
 > 🔁 **Note on Blockchain Layer:**  
 > The repository still contains the original Ethereum/Hardhat prototype (`contracts/` directory) as a reference for the DAO logic.  
-> The **target production deployment is on Cardano**, with Cardano-specific migration, architecture and Plutus plans documented in:  
-> - `CARDANO-MIGRATION-PLAN.md`  
-> - `CARDANO-MIGRATION-SUMMARY.md`  
+> The **target production deployment is on Cardano**, with Cardano-specific migration, architecture and Plutus plans documented in:   
 > - `TECHNOLOGY-FLOW-DIAGRAM.md`
 
 ## 🌐 **Impact & Vision**
